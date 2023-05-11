@@ -9,10 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\StoreUserRequest;
+use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\Sanctum;
 
 class AuthController extends Controller
 {
-    use HttpResponses;
+    use HttpResponses, HasApiTokens;
 
     public function ping(): JsonResponse
     {
@@ -62,6 +64,9 @@ class AuthController extends Controller
     }
     public function logout(): JsonResponse
     {
-        return response()->json('This is my logout');
+        Auth::user()->currentAccessToken()->delete();
+        return $this->success([
+            'message' => 'You have successfully been logged out and your token has been deleted'
+        ],);
     }
 }
